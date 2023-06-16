@@ -1,17 +1,29 @@
 "use client";
 
-import Button from "@/app/components/Button";
-import Input from "@/app/components/input/Input";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import AuthSocialButton from "./AuthSocialButton";
 import { BsGithub, BsGoogle } from "react-icons/bs";
+import axios from "axios";
+import { toast } from "react-hot-toast";
+import { signIn, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import Input from "../../components/input/Input";
+import Button from "../../components/Button";
 
 type Variant = "LOGIN" | "REGISTER";
 
 const AuthForm = () => {
   const [variant, setVariant] = useState<Variant>("LOGIN");
   const [isLoading, setIsLoading] = useState(false);
+  const session = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (session?.status === "authenticated") {
+      router.push("/users");
+    }
+  }, [session?.status]);
 
   const toggleVariant = useCallback(() => {
     if (variant === "LOGIN") {
@@ -36,13 +48,38 @@ const AuthForm = () => {
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
     setIsLoading(true);
     if (variant === "LOGIN") {
+      signIn("credentials", { ...data, redirect: false })
+        .then((callback) => {
+          if (callback?.error) {
+            toast.error("Invalid credentials");
+          } else {
+            router.push("/users");
+            toast.success("Login Successfull");
+          }
+        })
+        .finally(() => setIsLoading(false));
     }
     if (variant === "REGISTER") {
+      axios
+        .post("/api/register", data)
+        .then(() => {
+          signIn("credentials", data);
+        })
+        .catch(() => toast.error("Something went wrong"))
+        .finally(() => setIsLoading(false));
     }
   };
 
   const socialAction = (action: string) => {
-    setIsLoading(true);
+    signIn(action, { redirect: false })
+      .then((callback) => {
+        if (callback?.error) {
+          toast.error("Invalid credentials");
+        } else {
+          router.push("/users");
+        }
+      })
+      .finally(() => setIsLoading(false));
   };
 
   return (
