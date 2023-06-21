@@ -7,6 +7,7 @@ import Avatar from "../../../components/Avatar";
 import { format } from "date-fns";
 import Image from "next/image";
 import clsx from "clsx";
+import ImageModal from "./ImageModal";
 
 interface MessageBoxProps {
   data: FullMessageType;
@@ -42,7 +43,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({ data, isLast }) => {
           </div>
         </div>
         <div className={message}>
-          {/* <ImageModal src={data.image} isOpen={imageModalOpen} onClose={() => setImageModalOpen(false)} /> */}
+          <ImageModal src={data.image} isOpen={imageModalOpen} onClose={() => setImageModalOpen(false)} />
           {data.image ? (
             <Image
               alt="Image"
