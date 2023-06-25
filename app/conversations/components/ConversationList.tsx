@@ -11,6 +11,7 @@ import ConversationBox from "./ConversationBox";
 import { FullConversationType } from "../../types";
 import useConversation from "../../hooks/useConversation";
 import GroupChatModal from "../../components/modal/GroupChatModal";
+import { pusherClient } from "../../libs/pusher";
 
 interface ConversationListProps {
   initialItems: FullConversationType[];
@@ -39,7 +40,7 @@ const ConversationList: React.FC<ConversationListProps> = ({
       return;
     }
 
-    // pusherClient.subscribe(pusherKey);
+    pusherClient.subscribe(pusherKey);
 
     const updateHandler = (conversation: FullConversationType) => {
       setItems((current) =>
@@ -72,9 +73,9 @@ const ConversationList: React.FC<ConversationListProps> = ({
       });
     };
 
-    // pusherClient.bind('conversation:update', updateHandler)
-    // pusherClient.bind('conversation:new', newHandler)
-    // pusherClient.bind('conversation:remove', removeHandler)
+    pusherClient.bind("conversation:update", updateHandler);
+    pusherClient.bind("conversation:new", newHandler);
+    pusherClient.bind("conversation:remove", removeHandler);
   }, [pusherKey, router]);
 
   return (

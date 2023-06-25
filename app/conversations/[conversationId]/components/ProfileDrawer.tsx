@@ -9,6 +9,8 @@ import useOtherUser from "../../../hooks/useOtherUser";
 import { Dialog, Transition } from "@headlessui/react";
 import Avatar from "../../../components/Avatar";
 import ConfirmModal from "./ConfirmModal";
+import AvatarGroup from "../../../components/AvatarGroup";
+import useActiveList from "../../../hooks/useActiveList";
 
 interface ProfileDrawerProps {
   isOpen: boolean;
@@ -34,9 +36,8 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
     return data.name || otherUser.name;
   }, [data.name, otherUser.name]);
 
-  //   const { members } = useActiveList();
-  //   const isActive = members.indexOf(otherUser?.email!) !== -1;
-  const isActive = true;
+  const { members } = useActiveList();
+  const isActive = members.indexOf(otherUser?.email!) !== -1;
 
   const statusText = useMemo(() => {
     if (data.isGroup) {
@@ -98,8 +99,7 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
                         <div className="flex flex-col items-center">
                           <div className="mb-2">
                             {data.isGroup ? (
-                              //   <AvatarGroup users={data.users} />
-                              <Avatar user={otherUser} />
+                              <AvatarGroup users={data.users} />
                             ) : (
                               <Avatar user={otherUser} />
                             )}
